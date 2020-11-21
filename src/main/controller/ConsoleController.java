@@ -233,9 +233,7 @@ public class ConsoleController {
             col.add(task.getState());
             col.add(task.getPriority());
             rows.add(col);
-            //System.out.printf("|%10d|%10s|%10s|%10s|\n", task.getNumber(), task.getShortDescription(), task.getState(), task.getPriority());
         });
-
         System.out.println(OutputUtilities.generateTable(headerList, rows));
     }
 
@@ -243,7 +241,6 @@ public class ConsoleController {
        return menuEntries
                 .stream()
                .anyMatch(m -> m.getId() == selection);
-
     };
 
     public void getMainMenu () throws IOException {

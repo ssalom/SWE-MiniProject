@@ -6,11 +6,11 @@ import main.resources.State;
 import main.util.OutputUtilities;
 
 public class Task {
-    private int number;
-    private String shortDescription;
-    private String description;
-    private State state;
-    private Priority priority;
+private int number;
+private String shortDescription;
+private String description;
+private State state;
+private Priority priority;
 
     public Task(int number) {
         this.number = number;
