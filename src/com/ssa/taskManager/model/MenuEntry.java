@@ -22,4 +22,6 @@ public class MenuEntry {
     public int getOrder() {
         return order;
     }
+
+    public void onSelectAction () {}
 }
