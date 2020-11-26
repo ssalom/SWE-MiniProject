@@ -34,6 +34,7 @@ public class TaskService {
     }
 
     public void showTaskOnConsole () {
+        //ToDO Printout of Task didn't work.
         showAllTasksOnConsole();
         System.out.println("choose_task_by_number");
         TaskController tc = new TaskController(getTaskByNumber(ConsoleInputUtilities.readInt()));
@@ -57,9 +58,36 @@ public class TaskService {
     }
 
     public void removeTaskOnConsole () {
-        TaskController tc = new TaskController(new Task());
         showAllTasksOnConsole();
         System.out.print("task_select_task: ");
+        TaskController tc = new TaskController(getTaskByNumber(ConsoleInputUtilities.readInt()));
+        taskList.remove(tc.getTask());
+    }
 
+    public void editTaskOnConsole () {
+        showAllTasksOnConsole();
+        System.out.print("task_select_task: ");
+        TaskController tc = new TaskController(getTaskByNumber(ConsoleInputUtilities.readInt()));
+
+        System.out.print("task_shortDescription : ");
+        String shortDescitpion = ConsoleInputUtilities.readString();
+        if (!shortDescitpion.isEmpty()) {
+            tc.setShortDescription(shortDescitpion);
+        }
+
+        System.out.print("task_description : ");
+        String description = ConsoleInputUtilities.readString();
+        if (!description.isEmpty()) {
+            tc.setDescription(description);
+        }
+
+        System.out.print("task_priority : ");
+        tc.setPriority(ConsoleInputUtilities.readInt());
+
+        System.out.print("task_state : ");
+        tc.setState(ConsoleInputUtilities.readInt());
+
+        System.out.println("task_updated");
+        tc.printOutTaskDetails();
     }
 }

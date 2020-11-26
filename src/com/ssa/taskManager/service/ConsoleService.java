@@ -26,13 +26,13 @@ public class ConsoleService {
         MenuEntry editTaskMainMenuEntry = new MenuEntry(3, "edit_task", 3) {
             @Override
             public void onSelectAction() {
-                //ToDO Implement editTask BL
+                ts.editTaskOnConsole();
             }
         };
         MenuEntry deleteTaskMainMenuEntry = new MenuEntry(4, "delete_task", 4) {
             @Override
             public void onSelectAction() {
-                //ToDO Implement deleteTask BL
+                ts.removeTaskOnConsole();
             }
         };
         MenuEntry showAllTaskMainMenuEntry = new MenuEntry(5, "show_all_tasks", 5) {
