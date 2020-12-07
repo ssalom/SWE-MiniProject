@@ -3,12 +3,6 @@ package com.ssa.taskManager.controller;
 import com.ssa.taskManager.model.Menu;
 import com.ssa.taskManager.model.MenuEntry;
 import com.ssa.taskManager.view.MenuView;
-import main.service.MessageService;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Arrays;
 
 public class MenuController {
     private Menu model;

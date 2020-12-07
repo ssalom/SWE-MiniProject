@@ -1,7 +1,6 @@
 package com.ssa.taskManager.view;
 
-import main.service.MessageService;
-import main.util.OutputUtilities;
+import com.ssa.taskManager.utilities.ConsoleOutputUtilities;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +29,6 @@ public class TaskView {
         col.add(state);
         col.add(priority);
         rows.add(col);
-        System.out.println(OutputUtilities.generateTable(headerList, rows));
+        System.out.println(ConsoleOutputUtilities.generateTable(headerList, rows));
     }
 }
