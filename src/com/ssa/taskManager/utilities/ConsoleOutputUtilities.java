@@ -1,11 +1,11 @@
-package main.util;
+package com.ssa.taskManager.utilities;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 //Code copiert von https://stackoverflow.com/questions/2745206/output-in-a-table-format-in-javas-system-out
-public class OutputUtilities {
+public class ConsoleOutputUtilities {
 
   private static final int PADDING_SIZE = 2;
   private static final String NEW_LINE = "\n";
