@@ -3,6 +3,7 @@ package com.ssa.taskManager.view;
 import com.ssa.taskManager.controller.MenuEntryController;
 import com.ssa.taskManager.model.MenuEntry;
 import com.ssa.taskManager.utilities.ConsoleOutputUtilities;
+import com.ssa.taskManager.utilities.Localization;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,8 +14,8 @@ public class MenuView {
         List<List<String>> rows = new ArrayList<>();
 
 
-        headerList.add("Nr.");
-        headerList.add("Name");
+        headerList.add(Localization.getLabels().getString("menu-nr"));
+        headerList.add(Localization.getLabels().getString("menu-name"));
 
         for (MenuEntry menuEntry : menuEntries) {
             MenuEntryController menuEntryController = new MenuEntryController(menuEntry);

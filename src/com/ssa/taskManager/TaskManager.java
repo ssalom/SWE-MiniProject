@@ -2,9 +2,12 @@ package com.ssa.taskManager;
 
 import com.ssa.taskManager.service.ConsoleService;
 import com.ssa.taskManager.service.GuiService;
+import com.ssa.taskManager.utilities.Localization;
 import javafx.application.Application;
 
 import java.io.IOException;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 public class TaskManager {
 
