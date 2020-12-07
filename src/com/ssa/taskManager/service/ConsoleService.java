@@ -4,6 +4,7 @@ import com.ssa.taskManager.controller.MenuController;
 import com.ssa.taskManager.controller.MenuEntryController;
 import com.ssa.taskManager.model.Menu;
 import com.ssa.taskManager.model.MenuEntry;
+import com.ssa.taskManager.utilities.Localization;
 
 import java.util.Arrays;
 import java.util.Scanner;
@@ -11,37 +12,37 @@ import java.util.Scanner;
 public class ConsoleService {
     private TaskService ts = new TaskService();
     private MenuController generateMainMenu () {
-        MenuEntry addTaskMainMenuEntry = new MenuEntry(1, "add_task", 1) {
+        MenuEntry addTaskMainMenuEntry = new MenuEntry(1, Localization.getLabels().getString("add-task"), 1) {
             @Override
             public void onSelectAction() {
                 ts.addTaskOnConsole();
             }
         };
-        MenuEntry showTaskMainMenuEntry = new MenuEntry(2, "show_task", 2) {
+        MenuEntry showTaskMainMenuEntry = new MenuEntry(2, Localization.getLabels().getString("show-task"), 2) {
             @Override
             public void onSelectAction() {
                 ts.showTaskOnConsole();
             }
         };
-        MenuEntry editTaskMainMenuEntry = new MenuEntry(3, "edit_task", 3) {
+        MenuEntry editTaskMainMenuEntry = new MenuEntry(3, Localization.getLabels().getString("edit-task"), 3) {
             @Override
             public void onSelectAction() {
                 ts.editTaskOnConsole();
             }
         };
-        MenuEntry deleteTaskMainMenuEntry = new MenuEntry(4, "delete_task", 4) {
+        MenuEntry deleteTaskMainMenuEntry = new MenuEntry(4, Localization.getLabels().getString("delete-task"), 4) {
             @Override
             public void onSelectAction() {
                 ts.removeTaskOnConsole();
             }
         };
-        MenuEntry showAllTaskMainMenuEntry = new MenuEntry(5, "show_all_tasks", 5) {
+        MenuEntry showAllTaskMainMenuEntry = new MenuEntry(5, Localization.getLabels().getString("show-all-tasks"), 5) {
             @Override
             public void onSelectAction() {
                 ts.showAllTasksOnConsole();
             }
         };
-        MenuEntry exitMainMenuEntry = new MenuEntry(6, "exit", 6) {
+        MenuEntry exitMainMenuEntry = new MenuEntry(6, Localization.getLabels().getString("exit"), 6) {
             @Override
             public void onSelectAction() {
                 System.exit(0);
@@ -56,7 +57,7 @@ public class ConsoleService {
                 showAllTaskMainMenuEntry,
                 exitMainMenuEntry
         };
-        return new MenuController(new Menu("main_menu", menuEntries));
+        return new MenuController(new Menu(Localization.getLabels().getString("main-menu"), menuEntries));
     }
 
     private void displayMainMenu() {
@@ -85,7 +86,7 @@ public class ConsoleService {
                         .findFirst()
                         .get());
             } else {
-                System.out.println("wrong_menu_entry");
+                System.out.println(Localization.getLabels().getString("wrong-menu-entry"));
             }
         }
     }
@@ -100,13 +101,13 @@ public class ConsoleService {
 
         do {
             if (!firstTry) {
-                System.out.println("wrong_user_input_non_int");
+                System.out.println(Localization.getLabels().getString("wrong-user-input-non-int"));
                 System.out.println();
                 scanner.nextLine();
             } else {
                 firstTry = false;
             }
-            System.out.print("user_input : ");
+            System.out.print(Localization.getLabels().getString("user-input") + ": ");
         } while (!scanner.hasNextInt());
         return scanner.nextInt();
     }

@@ -3,6 +3,7 @@ package com.ssa.taskManager.controller;
 import com.ssa.taskManager.model.Task;
 import com.ssa.taskManager.resources.enums.Priority;
 import com.ssa.taskManager.resources.enums.State;
+import com.ssa.taskManager.utilities.Localization;
 import com.ssa.taskManager.view.TaskView;
 
 import java.util.ArrayList;
@@ -40,11 +41,12 @@ public class TaskController {
         model.setDescription(description);
     }
 
-    public State getState() {
-        return model.getState();
+    public String getState() {
+        return Localization.getLabels().getString(model.getState().name());
     }
 
     public void setState(int state) {
+        state -= 1;
         if (state == State.IN_PROGRESS.ordinal()) {
             model.setState(State.IN_PROGRESS);
         } else if (state == State.DONE.ordinal()) {
@@ -54,22 +56,23 @@ public class TaskController {
         }
     }
 
-    public Priority getPriority() {
-        return model.getPriority();
+    public String getPriority() {
+        return Localization.getLabels().getString(model.getPriority().name());
     }
 
     public void setPriority(int priority) {
-        if (priority == Priority.LOW.ordinal()) {
-          model.setPriority(Priority.LOW);
-        } else if (priority == Priority.MEDIUM.ordinal()) {
+        priority -= 1;
+        if (priority == Priority.MEDIUM.ordinal()) {
             model.setPriority(Priority.MEDIUM);
         } else if (priority == Priority.HIGH.ordinal()) {
             model.setPriority(Priority.HIGH);
+        } else {
+            model.setPriority(Priority.LOW);
         }
     }
 
     public void printOutTaskDetails () {
-        view.printOutTaskDetails(getNumber(), getShortDescription(), getDescription(), getState().name(), getPriority().name());
+        view.printOutTaskDetails(getNumber(), getShortDescription(), getDescription(), getState(), getPriority());
     }
 
     public List<String> getTaskColumnForlist () {
@@ -77,8 +80,8 @@ public class TaskController {
 
         col.add(getNumber());
         col.add(getShortDescription());
-        col.add(getState().name());
-        col.add(getPriority().name());
+        col.add(getState());
+        col.add(getPriority());
 
         return col;
     }

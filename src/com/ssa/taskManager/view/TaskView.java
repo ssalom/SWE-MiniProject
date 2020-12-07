@@ -1,6 +1,7 @@
 package com.ssa.taskManager.view;
 
 import com.ssa.taskManager.utilities.ConsoleOutputUtilities;
+import com.ssa.taskManager.utilities.Localization;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,11 +16,11 @@ public class TaskView {
     ) {
         List<String> headerList = new ArrayList<>();
         List<List<String>> rows = new ArrayList<>();
-        headerList.add("task_column_number");
-        headerList.add("task_column_short_description");
-        headerList.add("task_column_description");
-        headerList.add("task_column_state");
-        headerList.add("task_column_priority");
+        headerList.add(Localization.getLabels().getString("task-number"));
+        headerList.add(Localization.getLabels().getString("task-shortDescription"));
+        headerList.add(Localization.getLabels().getString("task-description"));
+        headerList.add(Localization.getLabels().getString("task-state"));
+        headerList.add(Localization.getLabels().getString("task-priority"));
 
         List<String> col = new ArrayList<>();
 
