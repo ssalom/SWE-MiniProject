@@ -21,7 +21,7 @@ import java.util.Arrays;
 public class TaskManagerGUIView {
     private TaskService ts = TaskService.getInstance();
     private ObservableList<Task> taskObservableList;
-    private TaskController tc;
+    private TaskController tc = new TaskController();
 
     @FXML
     private AnchorPane taskForm;
