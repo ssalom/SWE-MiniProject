@@ -26,7 +26,7 @@ public class TaskManagerConsoleView {
         tc.setDescription(ConsoleInputUtilities.readString());
 
         System.out.print(Localization.getLabels().getString("task-priority") + ": ");
-        tc.setPriority(ConsoleInputUtilities.readInt());
+        tc.setPriority(ConsoleInputUtilities.readInt() - 1);
 
         taskService.addTaskToList(tc.getTask());
     }
@@ -94,10 +94,10 @@ public class TaskManagerConsoleView {
             }
 
             System.out.print(Localization.getLabels().getString("task-priority") + ": ");
-            tc.setPriority(ConsoleInputUtilities.readInt());
+            tc.setPriority(ConsoleInputUtilities.readInt() - 1);
 
             System.out.print(Localization.getLabels().getString("task-state") + ": ");
-            tc.setState(ConsoleInputUtilities.readInt());
+            tc.setState(ConsoleInputUtilities.readInt() - 1);
 
             System.out.println(Localization.getLabels().getString("task-updated"));
             tc.printOutTaskDetails();

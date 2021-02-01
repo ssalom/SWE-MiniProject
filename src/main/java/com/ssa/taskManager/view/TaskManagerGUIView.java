@@ -11,13 +11,16 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 
 import java.util.Arrays;
 
 public class TaskManagerGUIView {
     private TaskService ts = TaskService.getInstance();
-    private ObservableList<Task> taskObservableListList;
+    private ObservableList<Task> taskObservableList;
     private TaskController tc;
 
     @FXML
@@ -28,12 +31,6 @@ public class TaskManagerGUIView {
 
     @FXML
     private MenuItem settings;
-
-    @FXML
-    private Button saveTask;
-
-    @FXML
-    private Button deleteTask;
 
     @FXML
     private TextField taskShortDescription;
@@ -67,19 +64,24 @@ public class TaskManagerGUIView {
 
     @FXML
     private void initialize() {
-        taskObservableListList = FXCollections.observableList(ts.getTaskList());
-
+        taskObservableList = FXCollections.observableList(ts.getTaskList());
         /*
          * Setzten der Consumer Call Back functions um die observable List synchron zu halten.
          */
-        ts.setAddTaskCallback(task -> Platform.runLater(() -> taskObservableListList.add(task)));
-        ts.setRemoveTaskCallback(task -> Platform.runLater(() -> taskObservableListList.remove(task)));
-        tasks.setItems(taskObservableListList);
+        ts.setAddTaskCallback(task -> Platform.runLater(() -> taskObservableList.add(task)));
+        ts.setRemoveTaskCallback(task -> Platform.runLater(() -> taskObservableList.remove(task)));
+
 
         if (!ts.getTaskList().isEmpty()) {
             toggleTaskFormOn();
         }
+        //Set Cell Value Factory for fields in table to map data in task to columns
+        columnNr.setCellValueFactory(new PropertyValueFactory<>("number"));
+        columnPriority.setCellValueFactory(new PropertyValueFactory<>("priority"));
+        columnState.setCellValueFactory(new PropertyValueFactory<>("state"));
+        columnShortDescription.setCellValueFactory(new PropertyValueFactory<>("shortDescription"));
 
+        tasks.setItems(taskObservableList);
     }
 
     private void toggleTaskFormOn () {
@@ -95,12 +97,13 @@ public class TaskManagerGUIView {
     }
 
     private void loadTaskIntoTaskForm (Task task) {
-        tc = new TaskController(task);
-        taskNr.setText(tc.getNumber());
+
+        tc.loadModel(task);
+        taskNr.setText(tc.getNumberDisplayValue());
         taskShortDescription.setText(tc.getShortDescription());
         taskDescription.setText(tc.getDescription());
-        taskState.setValue(tc.getState());
-        taskPriority.setValue(tc.getPriority());
+        taskState.setValue(tc.getStateDisplayValue());
+        taskPriority.setValue(tc.getPriorityDisplayValue());
         toggleTaskFormOn();
     }
 
@@ -124,8 +127,8 @@ public class TaskManagerGUIView {
     }
 
     private void getChoiceLists (int stateIndex, int priorityIndex) {
-        ObservableList states = FXCollections.observableList(Arrays.asList(State.values()));
-        ObservableList priorities = FXCollections.observableList(Arrays.asList(Priority.values()));
+        ObservableList states = FXCollections.observableArrayList(Arrays.asList(State.values()));
+        ObservableList priorities = FXCollections.observableArrayList(Arrays.asList(Priority.values()));
         taskState.setItems(states);;
         taskState.getSelectionModel().select(stateIndex);
         taskPriority.setItems(priorities);
@@ -138,12 +141,21 @@ public class TaskManagerGUIView {
     }
 
     public void saveTask(ActionEvent actionEvent) {
+        Task task = tc.getTask();
         if (updateTaskFromTaskForm()) {
-            ts.addTaskToList(tc.getTask());
+            ts.saveTask(task);
         }
     }
 
     public void deleteTask(ActionEvent actionEvent) {
         ts.removeTaskFromList(tc.getTask());
+    }
+
+    public void loadExistingTask(MouseEvent mouseEvent) {
+        if(mouseEvent.getButton().equals(MouseButton.PRIMARY)){
+            SelectionModel<Task> selectionModel = tasks.getSelectionModel();
+            Task task = selectionModel.getSelectedItem();
+            loadTaskIntoTaskForm(ts.getTaskByNumber(task.getNumber()));
+        }
     }
 }
