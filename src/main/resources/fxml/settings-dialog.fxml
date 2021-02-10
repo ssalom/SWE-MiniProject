@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ssa.taskManager.view.SettingsGUIView">
+   <children>
+      <TabPane prefHeight="400.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE">
+        <tabs>
+          <Tab text="Priorität">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TableView prefHeight="370.0" prefWidth="600.0">
+                          <columns>
+                            <TableColumn prefWidth="234.0" text="Field Name" />
+                            <TableColumn minWidth="0.0" prefWidth="242.0" text="Value" />
+                              <TableColumn prefWidth="122.0" text="Order" />
+                          </columns>
+                        </TableView>
+                     </children>
+                  </AnchorPane>
+            </content>
+          </Tab>
+          <Tab text="Status">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TableView prefHeight="370.0" prefWidth="600.0">
+                           <columns>
+                              <TableColumn prefWidth="234.0" text="Field Name" />
+                              <TableColumn minWidth="0.0" prefWidth="242.0" text="Value" />
+                              <TableColumn prefWidth="122.0" text="Order" />
+                           </columns>
+                        </TableView>
+                     </children>
+                  </AnchorPane>
+            </content>
+          </Tab>
+        </tabs>
+      </TabPane>
+   </children>
+</AnchorPane>

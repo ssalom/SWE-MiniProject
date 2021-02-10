@@ -9,7 +9,9 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseButton;
@@ -19,6 +21,7 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -156,51 +159,16 @@ public class TaskManagerGUIView {
     }
 
     public void showSettings(ActionEvent actionEvent) {
-        Dialog <List<Pair<String, Integer>>> settingsDialog = new Dialog<>();
-        settingsDialog.setTitle(Localization.getLabels().getString("settings"));
-        settingsDialog.setHeaderText(Localization.getLabels().getString("settings-header"));
-        DialogPane dialogPane = new DialogPane();
 
-        ButtonType saveButtonType = new ButtonType((Localization.getLabels().getString("save")), ButtonBar.ButtonData.OK_DONE);
-        settingsDialog.getDialogPane().getButtonTypes().addAll(saveButtonType, ButtonType.CANCEL);
-
-        GridPane grid = new GridPane();
-        grid.setHgap(10);
-        grid.setVgap(10);
-        grid.setPadding(new Insets(20, 150, 10, 10));
-
-        ComboBox taskState = new ComboBox();
-        ComboBox taskPriority = new ComboBox();
-
-        taskState.setItems(statesObservableList);
-        taskPriority.setItems(prioritiesObservableList);
-
-        taskState.setValue(Localization.getLabels().getString(ts.getDefaultState().name()));
-        taskPriority.setValue(Localization.getLabels().getString(ts.getDefaultPriority().name()));
-
-        grid.add(new Label(Localization.getLabels().getString("task-priority-label")), 0, 0);
-        grid.add(taskPriority, 1, 0);
-        grid.add(new Label(Localization.getLabels().getString("task-state-label")), 0, 1);
-        grid.add(taskState, 1, 1);
-
-        settingsDialog.getDialogPane().setContent(grid);
-
-        // Convert the result to a username-password-pair when the login button is clicked.
-        settingsDialog.setResultConverter(dialogButton -> {
-            List <Pair<String, Integer>> settings = new ArrayList<>();
-            if (dialogButton == saveButtonType) {
-                settings.add(new Pair<>("priority", taskPriority.getSelectionModel().getSelectedIndex()));
-                settings.add(new Pair<>("state", taskState.getSelectionModel().getSelectedIndex()));
-                return settings;
-            }
-            return settings;
-        });
-
-        Optional<List<Pair<String, Integer>>> result = settingsDialog.showAndWait();
-        result.ifPresent(settings -> {
-            settings.forEach(setting -> {
-                System.out.println(setting.getKey() + ": " + setting.getValue());
-            });
-        });
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/settings-dialog.fxml"));
+            Parent root = fxmlLoader.load();
+            Dialog settingsDialog = new Dialog();
+            settingsDialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK);
+            settingsDialog.getDialogPane().setContent(root);
+            settingsDialog.showAndWait();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
