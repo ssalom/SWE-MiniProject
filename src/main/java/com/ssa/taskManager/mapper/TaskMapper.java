@@ -12,11 +12,11 @@ public class TaskMapper {
 
         try {
             TaskController tc = new TaskController(task);
-            tc.setNumber(result.getInt(1));
-            tc.setShortDescription(result.getString(2));
-            tc.setDescription(result.getString(3));
-            tc.setState(result.getInt(4));
-            tc.setPriority(result.getInt(5));
+            tc.setNumber(result.getInt(2));
+            tc.setShortDescription(result.getString(3));
+            tc.setDescription(result.getString(4));
+            tc.setState(result.getInt(5));
+            tc.setPriority(result.getInt(6));
             return tc.getTask();
         } catch (SQLException throwables) {
             throwables.printStackTrace();

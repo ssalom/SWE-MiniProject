@@ -13,8 +13,8 @@ public class ChoiceController {
         this.model = model;
     }
 
-    public void setValue () {
-
+    public Choice getChoice () {
+        return model;
     }
 
     public String getValue() {
@@ -48,4 +48,6 @@ public class ChoiceController {
     public void setDefaultValue (boolean defaultValue) {
         model.setDefaultValue(defaultValue);
     }
+
+
 }

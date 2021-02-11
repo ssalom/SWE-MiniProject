@@ -15,11 +15,11 @@
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <TableView prefHeight="370.0" prefWidth="600.0">
+                        <TableView fx:id="priorities" prefHeight="370.0" prefWidth="600.0">
                           <columns>
-                            <TableColumn prefWidth="234.0" text="Field Name" />
-                            <TableColumn minWidth="0.0" prefWidth="242.0" text="Value" />
-                              <TableColumn prefWidth="122.0" text="Order" />
+                                <TableColumn fx:id="columnPriorityValue" minWidth="0.0" prefWidth="242.0" text="Value" />
+                                <TableColumn fx:id="columnPriorityOrder" prefWidth="122.0" text="Order" />
+                                <TableColumn fx:id="columnPriorityDefaultValue" prefWidth="122.0" text="Default Value" />
                           </columns>
                         </TableView>
                      </children>
@@ -30,11 +30,11 @@
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <TableView prefHeight="370.0" prefWidth="600.0">
+                        <TableView fx:id="states" prefHeight="370.0" prefWidth="600.0">
                            <columns>
-                              <TableColumn prefWidth="234.0" text="Field Name" />
-                              <TableColumn minWidth="0.0" prefWidth="242.0" text="Value" />
-                              <TableColumn prefWidth="122.0" text="Order" />
+                              <TableColumn fx:id="columnStateValue" minWidth="0.0" prefWidth="242.0" text="Value" />
+                              <TableColumn fx:id="columnStateOrder" prefWidth="122.0" text="Order" />
+                               <TableColumn fx:id="columnStateDefaultValue" prefWidth="122.0" text="Default Value" />
                            </columns>
                         </TableView>
                      </children>
