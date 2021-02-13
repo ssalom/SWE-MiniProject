@@ -92,8 +92,8 @@ public class TaskManagerGUIView {
         }
         //Set Cell Value Factory for fields in table to map data in task to columns
         columnNr.setCellValueFactory(new PropertyValueFactory<>("number"));
-        columnPriority.setCellValueFactory(new PropertyValueFactory<>("priority"));
-        columnState.setCellValueFactory(new PropertyValueFactory<>("state"));
+        columnPriority.setCellValueFactory(param -> ts.getPriorityById(param.getValue().getPriority()).valueProperty());
+        columnState.setCellValueFactory(param -> ts.getStateById(param.getValue().getState()).valueProperty());
         columnShortDescription.setCellValueFactory(new PropertyValueFactory<>("shortDescription"));
 
         tasks.setItems(taskObservableList);
