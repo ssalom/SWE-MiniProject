@@ -1,6 +1,8 @@
 package com.ssa.taskManager.view;
 
+import com.ssa.taskManager.controller.ChoiceController;
 import com.ssa.taskManager.controller.TaskController;
+import com.ssa.taskManager.model.Choice;
 import com.ssa.taskManager.model.Task;
 import com.ssa.taskManager.service.TaskService;
 import com.ssa.taskManager.utilities.Localization;
@@ -23,8 +25,8 @@ import java.io.IOException;
 public class TaskManagerGUIView {
     private TaskService ts = TaskService.getInstance();
     private ObservableList<Task> taskObservableList;
-    private ObservableList<String> statesObservableList;
-    private ObservableList<String> prioritiesObservableList;
+    private ObservableList<Choice> statesObservableList;
+    private ObservableList<Choice> prioritiesObservableList;
     private TaskController tc = new TaskController();
     private Stage stage;
 
@@ -44,39 +46,43 @@ public class TaskManagerGUIView {
     private TextArea taskDescription;
 
     @FXML
-    private ComboBox taskState;
+    private ComboBox<Choice> taskState;
 
     @FXML
-    private ComboBox taskPriority;
+    private ComboBox<Choice> taskPriority;
 
     @FXML
     private TableView tasks;
 
     @FXML
-    private TableColumn columnNr;
+    private TableColumn<Task, Integer> columnNr;
 
     @FXML
-    private TableColumn columnShortDescription;
+    private TableColumn<Task, String> columnShortDescription;
 
     @FXML
-    private TableColumn columnState;
+    private TableColumn<Task, String> columnState;
 
     @FXML
-    private TableColumn columnPriority;
+    private TableColumn<Task, String> columnPriority;
 
 
     @FXML
     private void initialize() {
         taskObservableList = FXCollections.observableList(ts.getTaskList());
+        statesObservableList = FXCollections.observableArrayList(ts.getStateList());
+        prioritiesObservableList = FXCollections.observableArrayList(ts.getPriorityList());
         /*
          * Setzten der Consumer Call Back functions um die observable List synchron zu halten.
          */
         ts.setAddTaskCallback(task -> Platform.runLater(() -> taskObservableList.add(task)));
         ts.setRemoveTaskCallback(task -> Platform.runLater(() -> taskObservableList.remove(task)));
+        ts.setAddChoiceCallback(priority -> Platform.runLater(() -> prioritiesObservableList.add(priority)));
+        ts.setRemoveChoiceCallback(priority -> Platform.runLater(() -> prioritiesObservableList.remove(priority)));
+        ts.setAddChoiceCallback(state -> Platform.runLater(() -> statesObservableList.add(state)));
+        ts.setRemoveChoiceCallback(state -> Platform.runLater(() -> statesObservableList.remove(state)));
 
 
-        statesObservableList = FXCollections.observableArrayList(ts.getStates());
-        prioritiesObservableList = FXCollections.observableArrayList(ts.getPriorities());
         taskState.setItems(statesObservableList);
         taskPriority.setItems(prioritiesObservableList);
 
@@ -108,8 +114,8 @@ public class TaskManagerGUIView {
         taskNr.setText(tc.getNumberDisplayValue());
         taskShortDescription.setText(tc.getShortDescription());
         taskDescription.setText(tc.getDescription());
-        taskState.setValue(tc.getStateDisplayValue());
-        taskPriority.setValue(tc.getPriorityDisplayValue());
+        taskState.setValue(ts.getStateById(tc.getState()));
+        taskPriority.setValue(ts.getPriorityById(tc.getPriority()));
         toggleTaskFormOn();
     }
 
@@ -157,6 +163,8 @@ public class TaskManagerGUIView {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/settings-dialog.fxml"));
             Parent root = fxmlLoader.load();
+            SettingsGUIView settingsGUIView = fxmlLoader.getController();
+            settingsGUIView.setTaskService(ts);
             Dialog settingsDialog = new Dialog();
             settingsDialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK);
             settingsDialog.getDialogPane().setContent(root);

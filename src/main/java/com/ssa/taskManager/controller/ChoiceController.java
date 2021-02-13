@@ -1,6 +1,7 @@
 package com.ssa.taskManager.controller;
 
 import com.ssa.taskManager.model.Choice;
+import com.ssa.taskManager.utilities.Localization;
 
 public class ChoiceController {
     private Choice model;
@@ -65,6 +66,9 @@ public class ChoiceController {
 
     public void setDefaultValue (boolean defaultValue) {
         model.setDefaultValue(defaultValue);
+    }
+    public String getChoiceDisplayValue() {
+        return Localization.getLabels().getString(model.getValue());
     }
 
 

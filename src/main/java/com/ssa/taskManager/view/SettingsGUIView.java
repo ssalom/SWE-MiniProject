@@ -3,6 +3,7 @@ package com.ssa.taskManager.view;
 import com.ssa.taskManager.controller.ChoiceController;
 import com.ssa.taskManager.model.Choice;
 import com.ssa.taskManager.repositories.ChoiceRepository;
+import com.ssa.taskManager.service.TaskService;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -22,6 +23,7 @@ public class SettingsGUIView {
 
     private ObservableList<Choice> prioritiesObservableList = FXCollections.observableArrayList(ChoiceRepository.getChoices("priority"));
     private ObservableList<Choice> statesObservableList = FXCollections.observableArrayList(ChoiceRepository.getChoices("state"));
+    private TaskService ts;
     private ChoiceController cc = new ChoiceController();
 
     @FXML
@@ -76,10 +78,12 @@ public class SettingsGUIView {
 
         priorityDefaultValue.setOnAction(event -> {
             ChoiceRepository.updateDefaultValue(priorityDefaultValue.getValue());
+            ts.setDefaultPriority(priorityDefaultValue.getValue());
         });
 
         stateDefaultValue.setOnAction(event -> {
             ChoiceRepository.updateDefaultValue(stateDefaultValue.getValue());
+            ts.setDefaultState(stateDefaultValue.getValue());
         });
 
         priorities.setEditable(true);
@@ -87,6 +91,10 @@ public class SettingsGUIView {
 
         priorities.setItems(prioritiesObservableList);
         states.setItems(statesObservableList);
+    }
+
+    public void setTaskService(TaskService ts) {
+        this.ts = ts;
     }
 
     private void prepareColumns(TableColumn<Choice, String> columnValue, TableColumn<Choice, Integer> columnOrder) {
@@ -121,9 +129,7 @@ public class SettingsGUIView {
             cc.createChoice(fieldName);
             TableView tableView = row.getTableView();
             row.getTableView().getItems().add(cc.getChoice());
-
             row.getTableView().edit(row.getIndex(), (TableColumn<Choice, ?>) tableView.getColumns().get(0));
-
             ChoiceRepository.createNewChoice(cc.getChoice());
         }
     }
