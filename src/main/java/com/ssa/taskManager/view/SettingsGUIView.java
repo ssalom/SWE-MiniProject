@@ -1,29 +1,34 @@
 package com.ssa.taskManager.view;
 
+import com.ssa.taskManager.controller.ChoiceController;
 import com.ssa.taskManager.model.Choice;
-import com.ssa.taskManager.model.Priority;
-import com.ssa.taskManager.model.State;
 import com.ssa.taskManager.repositories.ChoiceRepository;
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.geometry.Pos;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.util.Callback;
+import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
+import javafx.util.converter.IntegerStringConverter;
 
 public class SettingsGUIView {
 
-    private ObservableList<Choice> prioritiesObservableList = FXCollections.observableArrayList(ChoiceRepository.getPriorities());
-    private ObservableList<Choice> statesObservableList = FXCollections.observableArrayList(ChoiceRepository.getStates());
+
+    private ObservableList<Choice> prioritiesObservableList = FXCollections.observableArrayList(ChoiceRepository.getChoices("priority"));
+    private ObservableList<Choice> statesObservableList = FXCollections.observableArrayList(ChoiceRepository.getChoices("state"));
+    private ChoiceController cc = new ChoiceController();
+
+    @FXML
+    public ChoiceBox priorityDefaultValue;
+
+    @FXML
+    public ChoiceBox stateDefaultValue;
 
     @FXML
     private TableView<Choice> priorities;
@@ -37,8 +42,6 @@ public class SettingsGUIView {
     @FXML
     private TableColumn<Choice, Integer> columnPriorityOrder;
 
-    @FXML
-    private TableColumn<Choice, Boolean> columnPriorityDefaultValue;
 
     @FXML
     private TableColumn<Choice, String> columnStateValue;
@@ -46,20 +49,28 @@ public class SettingsGUIView {
     @FXML
     private TableColumn<Choice, Integer> columnStateOrder;
 
-    @FXML
-    private TableColumn<Choice, Boolean> columnStateDefaultValue;
 
     @FXML
     private void initialize() {
-        columnPriorityValue.setCellValueFactory(new PropertyValueFactory<>("value"));
-        columnPriorityOrder.setCellValueFactory(new PropertyValueFactory<>("order"));
-        columnPriorityDefaultValue.setCellValueFactory(param -> checkBoxCellValueFactoryCallback(param));
-        columnPriorityDefaultValue.setCellFactory(param ->  checkBoxCellFactoryCallback());
+        prepareColumns(columnPriorityValue, columnPriorityOrder);
+        prepareColumns(columnStateValue, columnStateOrder);
 
-        columnStateValue.setCellValueFactory(new PropertyValueFactory<>("value"));
-        columnStateOrder.setCellValueFactory(new PropertyValueFactory<>("order"));
-        columnStateDefaultValue.setCellValueFactory(param -> checkBoxCellValueFactoryCallback(param));
-        columnStateDefaultValue.setCellFactory(param ->  checkBoxCellFactoryCallback());
+        priorities.setRowFactory(param -> {
+                TableRow<Choice> row = new TableRow<Choice>();
+                row.setOnMouseClicked(event -> createNewChoice(event, (TableRow<Choice>) event.getSource(), "priority"));
+                return row;
+        });
+
+        states.setRowFactory(param -> {
+            TableRow<Choice> row = new TableRow<Choice>();
+            row.setOnMouseClicked(event -> createNewChoice(event, (TableRow<Choice>) event.getSource(), "state"));
+            return row;
+        });
+
+        priorityDefaultValue.setItems(prioritiesObservableList);
+        stateDefaultValue.setItems(statesObservableList);
+
+
 
         priorities.setEditable(true);
         states.setEditable(true);
@@ -68,26 +79,42 @@ public class SettingsGUIView {
         states.setItems(statesObservableList);
     }
 
+    private void prepareColumns(TableColumn<Choice, String> columnValue, TableColumn<Choice, Integer> columnOrder) {
+        columnValue.setCellValueFactory(new PropertyValueFactory<>("value"));
+        columnValue.setCellFactory(TextFieldTableCell.forTableColumn());
+        columnOrder.setCellValueFactory(new PropertyValueFactory<>("order"));
+        columnOrder.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
 
-    private CheckBoxTableCell<Choice, Boolean> checkBoxCellFactoryCallback() {
-            CheckBoxTableCell<Choice, Boolean> cell = new CheckBoxTableCell<Choice, Boolean>();
-            cell.setAlignment(Pos.CENTER);
-            return cell;
+        columnValue.setOnEditCommit(event -> {
+            TablePosition<Choice, String> pos = event.getTablePosition();
+            String newValue = event.getNewValue();
+            int row = pos.getRow();
+            Choice choice = event.getTableView().getItems().get(row);
+            cc.loadModel(choice);
+            cc.setValue(newValue);
+            ChoiceRepository.updateFieldValue(newValue, cc.getId());
+        });
+
+        columnOrder.setOnEditCommit(event -> {
+            TablePosition<Choice, Integer> pos = event.getTablePosition();
+            int newValue = event.getNewValue();
+            int row = pos.getRow();
+            Choice choice = event.getTableView().getItems().get(row);
+            cc.loadModel(choice);
+            cc.setOrder(newValue);
+            ChoiceRepository.updateOrder(newValue, cc.getId());
+        });
     }
 
-    private BooleanProperty checkBoxCellValueFactoryCallback(TableColumn.CellDataFeatures<Choice, Boolean> param) {
-        Choice choice = param.getValue();
+    public void createNewChoice(MouseEvent mouseEvent, TableRow<Choice> row, String fieldName) {
+        if (mouseEvent.getButton() == MouseButton.PRIMARY && mouseEvent.getClickCount() == 2 && row.isEmpty()) {
+            cc.createChoice(fieldName);
+            TableView tableView = row.getTableView();
+            row.getTableView().getItems().add(cc.getChoice());
 
-        SimpleBooleanProperty booleanProp = new SimpleBooleanProperty(choice.isDefaultValue());
+            row.getTableView().edit(row.getIndex(), (TableColumn<Choice, ?>) tableView.getColumns().get(0));
 
-        booleanProp.addListener(new ChangeListener<Boolean>() {
-
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue,
-                                Boolean newValue) {
-                choice.setDefaultValue(newValue);
-            }
-        });
-        return booleanProp;
+            ChoiceRepository.createNewChoice(cc.getChoice());
+        }
     }
 }
