@@ -25,10 +25,10 @@ public class SettingsGUIView {
     private ChoiceController cc = new ChoiceController();
 
     @FXML
-    public ChoiceBox priorityDefaultValue;
+    public ChoiceBox<Choice> priorityDefaultValue;
 
     @FXML
-    public ChoiceBox stateDefaultValue;
+    public ChoiceBox<Choice> stateDefaultValue;
 
     @FXML
     private TableView<Choice> priorities;
@@ -67,10 +67,20 @@ public class SettingsGUIView {
             return row;
         });
 
+
         priorityDefaultValue.setItems(prioritiesObservableList);
         stateDefaultValue.setItems(statesObservableList);
 
+        priorityDefaultValue.setValue(prioritiesObservableList.stream().filter(priority -> priority.isDefaultValue()).findFirst().orElse(null));
+        stateDefaultValue.setValue(statesObservableList.stream().filter(state -> state.isDefaultValue()).findFirst().orElse(null));
 
+        priorityDefaultValue.setOnAction(event -> {
+            ChoiceRepository.updateDefaultValue(priorityDefaultValue.getValue());
+        });
+
+        stateDefaultValue.setOnAction(event -> {
+            ChoiceRepository.updateDefaultValue(stateDefaultValue.getValue());
+        });
 
         priorities.setEditable(true);
         states.setEditable(true);

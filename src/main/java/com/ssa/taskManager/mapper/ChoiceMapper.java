@@ -10,6 +10,7 @@ public class ChoiceMapper {
     public static Choice mapResultSetToChoice (ResultSet result, Choice choice) {
         try {
             ChoiceController cc = new ChoiceController(choice);
+            cc.setId(result.getInt(1));
             cc.setValue(result.getString(2));
             cc.setOrder(result.getInt(3));
             cc.setFieldName(result.getString(4));

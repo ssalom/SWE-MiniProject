@@ -5,8 +5,18 @@ import com.ssa.taskManager.model.Choice;
 public class ChoiceController {
     private Choice model;
 
+    public ChoiceController() {
+    }
+
     public ChoiceController(Choice model) {
         this.model = model;
+    }
+
+    public void createChoice(String fieldName) {
+        model = new Choice();
+        model.setValue("NewChoice");
+        model.setFieldName(fieldName);
+        model.setDefaultValue(false);
     }
 
     public void loadModel (Choice model) {
@@ -15,6 +25,14 @@ public class ChoiceController {
 
     public Choice getChoice () {
         return model;
+    }
+
+    public void setId(int id) {
+        model.setId(id);
+    }
+
+    public int getId() {
+        return model.getId();
     }
 
     public String getValue() {

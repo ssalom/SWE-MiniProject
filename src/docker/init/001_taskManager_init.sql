@@ -24,10 +24,10 @@ DROP TABLE IF EXISTS `taskManager`.`choices` ;
 
 CREATE TABLE `taskManager`.`choices` (
     `id` INT NOT NULL AUTO_INCREMENT,
-    `value` VARCHAR(50) NOT NULL,
+    `value` VARCHAR(50) NOT NULL DEFAULT 'NewChoice',
     `order` INT NULL DEFAULT 1,
     `fieldName` VARCHAR(50) NOT NULL,
-    `defaultValue` TINYINT(1) NULL,
+    `defaultValue` TINYINT(1) NULL DEFAULT 0,
     PRIMARY KEY (`id`))
     ENGINE = InnoDB
     DEFAULT CHARSET = utf8mb4;

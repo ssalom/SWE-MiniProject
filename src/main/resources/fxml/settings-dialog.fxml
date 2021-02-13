@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
 
-
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ssa.taskManager.view.SettingsGUIView">
    <children>
-      <TabPane prefHeight="400.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE">
+      <TabPane layoutY="43.0" prefHeight="357.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE">
         <tabs>
           <Tab text="Priorität">
             <content>
@@ -19,7 +20,6 @@
                           <columns>
                                 <TableColumn fx:id="columnPriorityValue" minWidth="0.0" prefWidth="242.0" text="Value" />
                                 <TableColumn fx:id="columnPriorityOrder" prefWidth="122.0" text="Order" />
-                                <TableColumn fx:id="columnPriorityDefaultValue" prefWidth="122.0" text="Default Value" />
                           </columns>
                         </TableView>
                      </children>
@@ -34,7 +34,6 @@
                            <columns>
                               <TableColumn fx:id="columnStateValue" minWidth="0.0" prefWidth="242.0" text="Value" />
                               <TableColumn fx:id="columnStateOrder" prefWidth="122.0" text="Order" />
-                               <TableColumn fx:id="columnStateDefaultValue" prefWidth="122.0" text="Default Value" />
                            </columns>
                         </TableView>
                      </children>
@@ -43,5 +42,9 @@
           </Tab>
         </tabs>
       </TabPane>
+       <Label layoutX="14.0" layoutY="14.0" prefHeight="17.0" prefWidth="121.0" text="Default Value Priority" />
+       <ChoiceBox fx:id="priorityDefaultValue" layoutX="135.0" layoutY="10.0" prefHeight="25.0" prefWidth="136.0" />
+       <Label layoutX="300.0" layoutY="14.0" prefHeight="17.0" prefWidth="121.0" text="Default Value State" />
+       <ChoiceBox fx:id="stateDefaultValue" layoutX="411.0" layoutY="10.0" prefHeight="25.0" prefWidth="136.0" />
    </children>
 </AnchorPane>
