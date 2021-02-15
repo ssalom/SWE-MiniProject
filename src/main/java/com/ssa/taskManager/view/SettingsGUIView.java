@@ -4,14 +4,9 @@ import com.ssa.taskManager.controller.ChoiceController;
 import com.ssa.taskManager.model.Choice;
 import com.ssa.taskManager.repositories.ChoiceRepository;
 import com.ssa.taskManager.service.TaskService;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.MouseButton;
@@ -21,9 +16,9 @@ import javafx.util.converter.IntegerStringConverter;
 public class SettingsGUIView {
 
 
-    private ObservableList<Choice> prioritiesObservableList = FXCollections.observableArrayList(ChoiceRepository.getChoices("priority"));
-    private ObservableList<Choice> statesObservableList = FXCollections.observableArrayList(ChoiceRepository.getChoices("state"));
-    private TaskService ts;
+    private ObservableList<Choice> prioritiesObservableList;
+    private ObservableList<Choice> statesObservableList;
+    private TaskService ts = TaskService.getInstance();
     private ChoiceController cc = new ChoiceController();
 
     @FXML
@@ -51,6 +46,11 @@ public class SettingsGUIView {
     @FXML
     private TableColumn<Choice, Integer> columnStateOrder;
 
+    public SettingsGUIView(ObservableList<Choice> prioritiesObservableList, ObservableList<Choice> statesObservableList) {
+        this.prioritiesObservableList = prioritiesObservableList;
+        this.statesObservableList = statesObservableList;
+    }
+
 
     @FXML
     private void initialize() {
@@ -58,13 +58,13 @@ public class SettingsGUIView {
         prepareColumns(columnStateValue, columnStateOrder);
 
         priorities.setRowFactory(param -> {
-                TableRow<Choice> row = new TableRow<Choice>();
-                row.setOnMouseClicked(event -> createNewChoice(event, (TableRow<Choice>) event.getSource(), "priority"));
-                return row;
+            TableRow<Choice> row = new TableRow<>();
+            row.setOnMouseClicked(event -> createNewChoice(event, (TableRow<Choice>) event.getSource(), "priority"));
+            return row;
         });
 
         states.setRowFactory(param -> {
-            TableRow<Choice> row = new TableRow<Choice>();
+            TableRow<Choice> row = new TableRow<>();
             row.setOnMouseClicked(event -> createNewChoice(event, (TableRow<Choice>) event.getSource(), "state"));
             return row;
         });
@@ -91,10 +91,6 @@ public class SettingsGUIView {
 
         priorities.setItems(prioritiesObservableList);
         states.setItems(statesObservableList);
-    }
-
-    public void setTaskService(TaskService ts) {
-        this.ts = ts;
     }
 
     private void prepareColumns(TableColumn<Choice, String> columnValue, TableColumn<Choice, Integer> columnOrder) {
@@ -127,9 +123,9 @@ public class SettingsGUIView {
     public void createNewChoice(MouseEvent mouseEvent, TableRow<Choice> row, String fieldName) {
         if (mouseEvent.getButton() == MouseButton.PRIMARY && mouseEvent.getClickCount() == 2 && row.isEmpty()) {
             cc.createChoice(fieldName);
-            TableView tableView = row.getTableView();
+            TableView<Choice> tableView = row.getTableView();
             row.getTableView().getItems().add(cc.getChoice());
-            row.getTableView().edit(row.getIndex(), (TableColumn<Choice, ?>) tableView.getColumns().get(0));
+            row.getTableView().edit(row.getIndex(), tableView.getColumns().get(0));
             ChoiceRepository.createNewChoice(cc.getChoice());
         }
     }

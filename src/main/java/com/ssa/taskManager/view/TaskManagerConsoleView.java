@@ -11,100 +11,104 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TaskManagerConsoleView {
-    private TaskService taskService;
+    private TaskService ts = TaskService.getInstance();
+    private List<Task> taskList;
 
-    public TaskManagerConsoleView(TaskService taskService) {
-        this.taskService = taskService;
+    public TaskManagerConsoleView() {
+        taskList = ts.getTaskList();
     }
 
-    public void addTaskOnConsole () {
-        TaskController tc = new TaskController( taskService.createNewTask());
-        System.out.print(Localization.getLabels().getString("task-shortDescription") + ": ");
+    public void addTaskOnConsole() {
+        TaskController tc = new TaskController(ts.createNewTask());
+        System.out.print(Localization.getTranslation("task-shortDescription") + ": ");
         tc.setShortDescription(ConsoleInputUtilities.readString());
 
-        System.out.print(Localization.getLabels().getString("task-description") + ": ");
+        System.out.print(Localization.getTranslation("task-description") + ": ");
         tc.setDescription(ConsoleInputUtilities.readString());
 
-        System.out.print(Localization.getLabels().getString("task-priority") + ": ");
-        tc.setPriority(ConsoleInputUtilities.readInt() - 1);
+        System.out.print(Localization.getTranslation("task-priority") + ": ");
+        tc.setPriority(ts.getPriorityByValue(ConsoleInputUtilities.readString()));
 
-        taskService.addTaskToList(tc.getTask());
+        ts.saveTask(tc.getTask());
+        taskList.add(tc.getTask());
     }
 
     public void showTaskOnConsole () {
         //ToDO Printout of Task didn't work.
 
-        if (!taskService.getTaskList().isEmpty()) {
+        if (!ts.getTaskList().isEmpty()) {
             showAllTasksOnConsole();
-            System.out.println(Localization.getLabels().getString("choose-task-by-number") + ": ");
-            TaskController tc = new TaskController(taskService.getTaskByNumber(ConsoleInputUtilities.readInt()));
+            System.out.println(Localization.getTranslation("choose-task-by-number") + ": ");
+            TaskController tc = new TaskController(ts.getTaskByNumber(ConsoleInputUtilities.readInt()));
             tc.printOutTaskDetails();
         } else {
-            System.out.println(Localization.getLabels().getString("no-tasks-created"));
+            System.out.println(Localization.getTranslation("no-tasks-created"));
         }
     }
 
     public void showAllTasksOnConsole () {
-        if (!taskService.getTaskList().isEmpty()) {
+        if (!ts.getTaskList().isEmpty()) {
             List<String> headerList = new ArrayList<>();
             List<List<String>> rows = new ArrayList<>();
-            headerList.add(Localization.getLabels().getString("task-number"));
-            headerList.add(Localization.getLabels().getString("task-shortDescription"));
-            headerList.add(Localization.getLabels().getString("task-state"));
-            headerList.add(Localization.getLabels().getString("task-priority"));
+            headerList.add(Localization.getTranslation("task-number"));
+            headerList.add(Localization.getTranslation("task-shortDescription"));
+            headerList.add(Localization.getTranslation("task-state"));
+            headerList.add(Localization.getTranslation("task-priority"));
 
-            taskService.getTaskList().forEach((Task task) -> {
+            ts.getTaskList().forEach((Task task) -> {
                 TaskController tc = new TaskController(task);
                 List<String> col = tc.getTaskColumnForlist();
                 rows.add(col);
             });
             System.out.println(ConsoleOutputUtilities.generateTable(headerList, rows));
         } else {
-            System.out.println(Localization.getLabels().getString("no-tasks-created"));
+            System.out.println(Localization.getTranslation("no-tasks-created"));
         }
     }
 
     public void removeTaskOnConsole () {
-        if (!taskService.getTaskList().isEmpty()) {
+        if (!ts.getTaskList().isEmpty()) {
             showAllTasksOnConsole();
-            System.out.print(Localization.getLabels().getString("choose-task-by-number") + ": ");
-            TaskController tc = new TaskController(taskService.getTaskByNumber(ConsoleInputUtilities.readInt()));
-            taskService.removeTaskFromList(tc.getTask());
+            System.out.print(Localization.getTranslation("choose-task-by-number") + ": ");
+            TaskController tc = new TaskController(ts.getTaskByNumber(ConsoleInputUtilities.readInt()));
+            ts.removeTaskFromList(tc.getTask());
+            taskList.remove(tc.getTask());
         } else {
-            System.out.println(Localization.getLabels().getString("no-tasks-created"));
+            System.out.println(Localization.getTranslation("no-tasks-created"));
         }
     }
 
     public void editTaskOnConsole () {
-        if (!taskService.getTaskList().isEmpty()) {
+        if (!ts.getTaskList().isEmpty()) {
             showAllTasksOnConsole();
-            System.out.print(Localization.getLabels().getString("choose-task-by-number") + ": ");
-            TaskController tc = new TaskController(taskService.getTaskByNumber(ConsoleInputUtilities.readInt()));
+            System.out.print(Localization.getTranslation("choose-task-by-number") + ": ");
+            TaskController tc = new TaskController(ts.getTaskByNumber(ConsoleInputUtilities.readInt()));
 
-            System.out.print(Localization.getLabels().getString("task-shortDescription") + ": ");
+            System.out.print(Localization.getTranslation("task-shortDescription") + ": ");
             String shortDescitpion = ConsoleInputUtilities.readString();
             if (!shortDescitpion.isEmpty()) {
                 tc.setShortDescription(shortDescitpion);
             }
 
-            System.out.print(Localization.getLabels().getString("task-description") + ": ");
+            System.out.print(Localization.getTranslation("task-description") + ": ");
             String description = ConsoleInputUtilities.readString();
             if (!description.isEmpty()) {
                 tc.setDescription(description);
             }
 
-            System.out.print(Localization.getLabels().getString("task-priority") + ": ");
-            tc.setPriority(ConsoleInputUtilities.readInt() - 1);
+            System.out.print(Localization.getTranslation("task-priority") + ": ");
+            tc.setPriority(ts.getPriorityByValue(ConsoleInputUtilities.readString()));
 
-            System.out.print(Localization.getLabels().getString("task-state") + ": ");
-            tc.setState(ConsoleInputUtilities.readInt() - 1);
+            System.out.print(Localization.getTranslation("task-state") + ": ");
+            tc.setState(ts.getStateByValue(ConsoleInputUtilities.readString()));
 
-            System.out.println(Localization.getLabels().getString("task-updated"));
+            ts.saveTask(tc.getTask());
+
+            System.out.println(Localization.getTranslation("task-updated"));
             tc.printOutTaskDetails();
         } else {
-            System.out.println(Localization.getLabels().getString("no-tasks-created"));
+            System.out.println(Localization.getTranslation("no-tasks-created"));
         }
 
     }
-
 }

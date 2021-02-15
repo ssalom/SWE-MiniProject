@@ -1,6 +1,5 @@
 package com.ssa.taskManager.view;
 
-import com.ssa.taskManager.controller.ChoiceController;
 import com.ssa.taskManager.controller.TaskController;
 import com.ssa.taskManager.model.Choice;
 import com.ssa.taskManager.model.Task;
@@ -52,7 +51,7 @@ public class TaskManagerGUIView {
     private ComboBox<Choice> taskPriority;
 
     @FXML
-    private TableView tasks;
+    private TableView<Task> tasks;
 
     @FXML
     private TableColumn<Task, Integer> columnNr;
@@ -61,7 +60,7 @@ public class TaskManagerGUIView {
     private TableColumn<Task, String> columnShortDescription;
 
     @FXML
-    private TableColumn<Task, String> columnState;
+    private TableColumn<Task, Choice> columnState;
 
     @FXML
     private TableColumn<Task, String> columnPriority;
@@ -77,23 +76,18 @@ public class TaskManagerGUIView {
          */
         ts.setAddTaskCallback(task -> Platform.runLater(() -> taskObservableList.add(task)));
         ts.setRemoveTaskCallback(task -> Platform.runLater(() -> taskObservableList.remove(task)));
-        ts.setAddChoiceCallback(priority -> Platform.runLater(() -> prioritiesObservableList.add(priority)));
-        ts.setRemoveChoiceCallback(priority -> Platform.runLater(() -> prioritiesObservableList.remove(priority)));
-        ts.setAddChoiceCallback(state -> Platform.runLater(() -> statesObservableList.add(state)));
-        ts.setRemoveChoiceCallback(state -> Platform.runLater(() -> statesObservableList.remove(state)));
-
+        ts.setAddPriorityCallback(priority -> Platform.runLater(() -> prioritiesObservableList.add(priority)));
+        ts.setRemovePriorityCallback(priority -> Platform.runLater(() -> prioritiesObservableList.remove(priority)));
+        ts.setAddStateCallback(state -> Platform.runLater(() -> statesObservableList.add(state)));
+        ts.setRemoveStateCallback(state -> Platform.runLater(() -> statesObservableList.remove(state)));
 
         taskState.setItems(statesObservableList);
         taskPriority.setItems(prioritiesObservableList);
 
-
-        if (!ts.getTaskList().isEmpty()) {
-            toggleTaskFormOn();
-        }
         //Set Cell Value Factory for fields in table to map data in task to columns
         columnNr.setCellValueFactory(new PropertyValueFactory<>("number"));
-        columnPriority.setCellValueFactory(param -> ts.getPriorityById(param.getValue().getPriority()).valueProperty());
-        columnState.setCellValueFactory(param -> ts.getStateById(param.getValue().getState()).valueProperty());
+        columnPriority.setCellValueFactory(new PropertyValueFactory<>("priority"));
+        columnState.setCellValueFactory(new PropertyValueFactory<>("state"));
         columnShortDescription.setCellValueFactory(new PropertyValueFactory<>("shortDescription"));
 
         tasks.setItems(taskObservableList);
@@ -114,8 +108,8 @@ public class TaskManagerGUIView {
         taskNr.setText(tc.getNumberDisplayValue());
         taskShortDescription.setText(tc.getShortDescription());
         taskDescription.setText(tc.getDescription());
-        taskState.setValue(ts.getStateById(tc.getState()));
-        taskPriority.setValue(ts.getPriorityById(tc.getPriority()));
+        taskState.setValue(tc.getState());
+        taskPriority.setValue(tc.getPriority());
         toggleTaskFormOn();
     }
 
@@ -123,8 +117,8 @@ public class TaskManagerGUIView {
         if (tc.getTask() != null) {
             tc.setShortDescription(taskShortDescription.getText());
             tc.setDescription(taskDescription.getText());
-            tc.setPriority(taskPriority.getSelectionModel().getSelectedIndex());
-            tc.setState(taskState.getSelectionModel().getSelectedIndex());
+            tc.setPriority(taskPriority.getSelectionModel().getSelectedItem());
+            tc.setState(taskState.getSelectionModel().getSelectedItem());
             return true;
         }
 
@@ -134,20 +128,20 @@ public class TaskManagerGUIView {
 
     public void initNewTask(ActionEvent actionEvent) {
         loadTaskIntoTaskForm(ts.createNewTask());
-        statusLabel.setText(Localization.getLabels().getString("task-created"));
+        statusLabel.setText(Localization.getTranslation("task-created"));
     }
 
     public void saveTask(ActionEvent actionEvent) {
         Task task = tc.getTask();
         if (updateTaskFromTaskForm()) {
-            statusLabel.setText(Localization.getLabels().getString("task-saved"));
+            statusLabel.setText(Localization.getTranslation("task-saved"));
             ts.saveTask(task);
         }
     }
 
     public void deleteTask(ActionEvent actionEvent) {
         ts.removeTaskFromList(tc.getTask());
-        statusLabel.setText(Localization.getLabels().getString("task-deleted"));
+        statusLabel.setText(Localization.getTranslation("task-deleted"));
     }
 
     public void loadExistingTask(MouseEvent mouseEvent) {
@@ -162,13 +156,13 @@ public class TaskManagerGUIView {
 
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/settings-dialog.fxml"));
+            fxmlLoader.setControllerFactory(c -> new SettingsGUIView(prioritiesObservableList, statesObservableList));
             Parent root = fxmlLoader.load();
-            SettingsGUIView settingsGUIView = fxmlLoader.getController();
-            settingsGUIView.setTaskService(ts);
             Dialog settingsDialog = new Dialog();
             settingsDialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK);
             settingsDialog.getDialogPane().setContent(root);
             settingsDialog.showAndWait();
+            tasks.refresh();
         } catch (IOException e) {
             e.printStackTrace();
         }
