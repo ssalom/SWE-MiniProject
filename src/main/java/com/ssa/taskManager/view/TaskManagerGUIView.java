@@ -163,6 +163,8 @@ public class TaskManagerGUIView {
             settingsDialog.getDialogPane().setContent(root);
             settingsDialog.showAndWait();
             tasks.refresh();
+            statesObservableList.sort((Choice state1, Choice state2) -> state1.getOrder() - state2.getOrder());
+            prioritiesObservableList.sort((Choice priority1, Choice priority2) -> priority1.getOrder() - priority2.getOrder());
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -3,11 +3,13 @@ package com.ssa.taskManager.repositories;
 import com.ssa.taskManager.config.TaskManagerDBConnection;
 import com.ssa.taskManager.controller.ChoiceController;
 import com.ssa.taskManager.mapper.ChoiceMapper;
-import com.ssa.taskManager.model.Choice;;
+import com.ssa.taskManager.model.Choice;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+
+;
 
 public class ChoiceRepository {
     public static List<Choice> getChoices (String fieldName) {
@@ -100,9 +102,5 @@ public class ChoiceRepository {
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
-
-
     }
-
-
 }
