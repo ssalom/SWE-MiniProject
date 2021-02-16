@@ -1,6 +1,8 @@
 package com.ssa.taskManager.view;
 
+import com.ssa.taskManager.controller.ChoiceController;
 import com.ssa.taskManager.controller.TaskController;
+import com.ssa.taskManager.model.Choice;
 import com.ssa.taskManager.model.Task;
 import com.ssa.taskManager.service.TaskService;
 import com.ssa.taskManager.utilities.Localization;
@@ -9,25 +11,22 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.geometry.Insets;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
-import javafx.util.Pair;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.io.IOException;
 
 public class TaskManagerGUIView {
     private TaskService ts = TaskService.getInstance();
     private ObservableList<Task> taskObservableList;
-    private ObservableList<String> statesObservableList;
-    private ObservableList<String> prioritiesObservableList;
+    private ObservableList<Choice> statesObservableList;
+    private ObservableList<Choice> prioritiesObservableList;
     private TaskController tc = new TaskController();
     private Stage stage;
 
@@ -47,39 +46,43 @@ public class TaskManagerGUIView {
     private TextArea taskDescription;
 
     @FXML
-    private ComboBox taskState;
+    private ComboBox<Choice> taskState;
 
     @FXML
-    private ComboBox taskPriority;
+    private ComboBox<Choice> taskPriority;
 
     @FXML
     private TableView tasks;
 
     @FXML
-    private TableColumn columnNr;
+    private TableColumn<Task, Integer> columnNr;
 
     @FXML
-    private TableColumn columnShortDescription;
+    private TableColumn<Task, String> columnShortDescription;
 
     @FXML
-    private TableColumn columnState;
+    private TableColumn<Task, String> columnState;
 
     @FXML
-    private TableColumn columnPriority;
+    private TableColumn<Task, String> columnPriority;
 
 
     @FXML
     private void initialize() {
         taskObservableList = FXCollections.observableList(ts.getTaskList());
+        statesObservableList = FXCollections.observableArrayList(ts.getStateList());
+        prioritiesObservableList = FXCollections.observableArrayList(ts.getPriorityList());
         /*
          * Setzten der Consumer Call Back functions um die observable List synchron zu halten.
          */
         ts.setAddTaskCallback(task -> Platform.runLater(() -> taskObservableList.add(task)));
         ts.setRemoveTaskCallback(task -> Platform.runLater(() -> taskObservableList.remove(task)));
+        ts.setAddChoiceCallback(priority -> Platform.runLater(() -> prioritiesObservableList.add(priority)));
+        ts.setRemoveChoiceCallback(priority -> Platform.runLater(() -> prioritiesObservableList.remove(priority)));
+        ts.setAddChoiceCallback(state -> Platform.runLater(() -> statesObservableList.add(state)));
+        ts.setRemoveChoiceCallback(state -> Platform.runLater(() -> statesObservableList.remove(state)));
 
 
-        statesObservableList = FXCollections.observableArrayList(ts.getStates());
-        prioritiesObservableList = FXCollections.observableArrayList(ts.getPriorities());
         taskState.setItems(statesObservableList);
         taskPriority.setItems(prioritiesObservableList);
 
@@ -89,8 +92,8 @@ public class TaskManagerGUIView {
         }
         //Set Cell Value Factory for fields in table to map data in task to columns
         columnNr.setCellValueFactory(new PropertyValueFactory<>("number"));
-        columnPriority.setCellValueFactory(new PropertyValueFactory<>("priority"));
-        columnState.setCellValueFactory(new PropertyValueFactory<>("state"));
+        columnPriority.setCellValueFactory(param -> ts.getPriorityById(param.getValue().getPriority()).valueProperty());
+        columnState.setCellValueFactory(param -> ts.getStateById(param.getValue().getState()).valueProperty());
         columnShortDescription.setCellValueFactory(new PropertyValueFactory<>("shortDescription"));
 
         tasks.setItems(taskObservableList);
@@ -111,8 +114,8 @@ public class TaskManagerGUIView {
         taskNr.setText(tc.getNumberDisplayValue());
         taskShortDescription.setText(tc.getShortDescription());
         taskDescription.setText(tc.getDescription());
-        taskState.setValue(tc.getStateDisplayValue());
-        taskPriority.setValue(tc.getPriorityDisplayValue());
+        taskState.setValue(ts.getStateById(tc.getState()));
+        taskPriority.setValue(ts.getPriorityById(tc.getPriority()));
         toggleTaskFormOn();
     }
 
@@ -156,51 +159,18 @@ public class TaskManagerGUIView {
     }
 
     public void showSettings(ActionEvent actionEvent) {
-        Dialog <List<Pair<String, Integer>>> settingsDialog = new Dialog<>();
-        settingsDialog.setTitle(Localization.getLabels().getString("settings"));
-        settingsDialog.setHeaderText(Localization.getLabels().getString("settings-header"));
-        DialogPane dialogPane = new DialogPane();
 
-        ButtonType saveButtonType = new ButtonType((Localization.getLabels().getString("save")), ButtonBar.ButtonData.OK_DONE);
-        settingsDialog.getDialogPane().getButtonTypes().addAll(saveButtonType, ButtonType.CANCEL);
-
-        GridPane grid = new GridPane();
-        grid.setHgap(10);
-        grid.setVgap(10);
-        grid.setPadding(new Insets(20, 150, 10, 10));
-
-        ComboBox taskState = new ComboBox();
-        ComboBox taskPriority = new ComboBox();
-
-        taskState.setItems(statesObservableList);
-        taskPriority.setItems(prioritiesObservableList);
-
-        taskState.setValue(Localization.getLabels().getString(ts.getDefaultState().name()));
-        taskPriority.setValue(Localization.getLabels().getString(ts.getDefaultPriority().name()));
-
-        grid.add(new Label(Localization.getLabels().getString("task-priority-label")), 0, 0);
-        grid.add(taskPriority, 1, 0);
-        grid.add(new Label(Localization.getLabels().getString("task-state-label")), 0, 1);
-        grid.add(taskState, 1, 1);
-
-        settingsDialog.getDialogPane().setContent(grid);
-
-        // Convert the result to a username-password-pair when the login button is clicked.
-        settingsDialog.setResultConverter(dialogButton -> {
-            List <Pair<String, Integer>> settings = new ArrayList<>();
-            if (dialogButton == saveButtonType) {
-                settings.add(new Pair<>("priority", taskPriority.getSelectionModel().getSelectedIndex()));
-                settings.add(new Pair<>("state", taskState.getSelectionModel().getSelectedIndex()));
-                return settings;
-            }
-            return settings;
-        });
-
-        Optional<List<Pair<String, Integer>>> result = settingsDialog.showAndWait();
-        result.ifPresent(settings -> {
-            settings.forEach(setting -> {
-                System.out.println(setting.getKey() + ": " + setting.getValue());
-            });
-        });
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/settings-dialog.fxml"));
+            Parent root = fxmlLoader.load();
+            SettingsGUIView settingsGUIView = fxmlLoader.getController();
+            settingsGUIView.setTaskService(ts);
+            Dialog settingsDialog = new Dialog();
+            settingsDialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK);
+            settingsDialog.getDialogPane().setContent(root);
+            settingsDialog.showAndWait();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
