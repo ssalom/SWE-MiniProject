@@ -3,11 +3,13 @@ package com.ssa.taskManager.repositories;
 import com.ssa.taskManager.config.TaskManagerDBConnection;
 import com.ssa.taskManager.controller.ChoiceController;
 import com.ssa.taskManager.mapper.ChoiceMapper;
-import com.ssa.taskManager.model.Choice;;
+import com.ssa.taskManager.model.Choice;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+
+;
 
 public class ChoiceRepository {
     public static List<Choice> getChoices (String fieldName) {
@@ -26,6 +28,7 @@ public class ChoiceRepository {
             throwables.printStackTrace();
         }
 
+        TaskManagerDBConnection.closeConnection(connection);
         return choices;
     }
 
@@ -36,10 +39,16 @@ public class ChoiceRepository {
             PreparedStatement prepStatement = connection.prepareStatement(sql);
             prepStatement.setString(1, fieldValue);
             prepStatement.setInt(2, id);
-            return prepStatement.execute();
+            if (prepStatement.execute()) {
+                TaskManagerDBConnection.closeConnection(connection);
+                return true;
+            }
+
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
+
+        TaskManagerDBConnection.closeConnection(connection);
         return false;
     }
 
@@ -50,10 +59,15 @@ public class ChoiceRepository {
             PreparedStatement prepStatement = connection.prepareStatement(sql);
             prepStatement.setInt(1, order);
             prepStatement.setInt(2, id);
-            return prepStatement.execute();
+            if (prepStatement.execute()) {
+                TaskManagerDBConnection.closeConnection(connection);
+                return true;
+            }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
+
+        TaskManagerDBConnection.closeConnection(connection);
         return false;
     }
 
@@ -67,15 +81,20 @@ public class ChoiceRepository {
         Connection connection = TaskManagerDBConnection.openConnection();
         try {
             PreparedStatement prepStatement = connection.prepareStatement(sqlUpdatePreviousDefaulValue);
-            prepStatement.setString(1,cc.getFieldName());
+            prepStatement.setString(1, cc.getFieldName());
             prepStatement.execute();
 
             prepStatement = connection.prepareStatement(sqlUpdateNewDefaultValue);
-            prepStatement.setInt(1,cc.getId());
-            return prepStatement.execute();
+            prepStatement.setInt(1, cc.getId());
+            if (prepStatement.execute()) {
+                TaskManagerDBConnection.closeConnection(connection);
+                return true;
+            }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
+
+        TaskManagerDBConnection.closeConnection(connection);
         return false;
     }
 
@@ -101,8 +120,6 @@ public class ChoiceRepository {
             throwables.printStackTrace();
         }
 
-
+        TaskManagerDBConnection.closeConnection(connection);
     }
-
-
 }

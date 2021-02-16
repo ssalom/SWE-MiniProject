@@ -3,6 +3,7 @@ package com.ssa.taskManager.repositories;
 import com.ssa.taskManager.config.TaskManagerDBConnection;
 import com.ssa.taskManager.controller.TaskController;
 import com.ssa.taskManager.mapper.TaskMapper;
+import com.ssa.taskManager.model.Choice;
 import com.ssa.taskManager.model.Task;
 
 import java.sql.*;
@@ -20,12 +21,17 @@ public class TaskManagerRepository {
             preparedStatement.setInt(1, tc.getNumber());
             preparedStatement.setString(2, tc.getShortDescription());
             preparedStatement.setString(3, tc.getDescription());
-            preparedStatement.setInt(4, tc.getState());
-            preparedStatement.setInt(5, tc.getPriority());
-            return preparedStatement.execute();
+            preparedStatement.setInt(4, tc.getState().getId());
+            preparedStatement.setInt(5, tc.getPriority().getId());
+            if (preparedStatement.execute()) {
+                TaskManagerDBConnection.closeConnection(connection);
+                return true;
+            }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
+
+        TaskManagerDBConnection.closeConnection(connection);
         return false;
     }
 
@@ -37,13 +43,19 @@ public class TaskManagerRepository {
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, tc.getShortDescription());
             preparedStatement.setString(2, tc.getDescription());
-            preparedStatement.setInt(3, tc.getState());
-            preparedStatement.setInt(4, tc.getPriority());
+            preparedStatement.setInt(3, tc.getState().getId());
+            preparedStatement.setInt(4, tc.getPriority().getId());
             preparedStatement.setInt(5, tc.getNumber());
-            return preparedStatement.execute();
+            if (preparedStatement.execute()) {
+                TaskManagerDBConnection.closeConnection(connection);
+                return true;
+            }
+
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
+
+        TaskManagerDBConnection.closeConnection(connection);
         return false;
     }
 
@@ -54,28 +66,33 @@ public class TaskManagerRepository {
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setInt(1, tc.getNumber());
-            return preparedStatement.execute();
+            if (preparedStatement.execute()) {
+                TaskManagerDBConnection.closeConnection(connection);
+                return true;
+            }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
-
+        TaskManagerDBConnection.closeConnection(connection);
         return false;
     }
 
-    public static List<Task> getAllTasks () {
+    public static List<Task> getAllTasks(List<Choice> priorities, List<Choice> states) {
         String sql = "SELECT * FROM task";
         Connection connection = TaskManagerDBConnection.openConnection();
         List<Task> tasks = new ArrayList<>();
         try {
             Statement statement = connection.createStatement();
             ResultSet result = statement.executeQuery(sql);
+
             while (result.next()) {
-                tasks.add(TaskMapper.mapResultSetToTask(result, new Task()));
+                tasks.add(TaskMapper.mapResultSetToTask(result, new Task(), priorities, states));
             }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
 
+        TaskManagerDBConnection.closeConnection(connection);
         return tasks;
     }
 }

@@ -1,5 +1,6 @@
 package com.ssa.taskManager.model;
 
+import com.ssa.taskManager.utilities.Localization;
 import javafx.beans.property.*;
 
 public class Choice {
@@ -70,6 +71,6 @@ public class Choice {
     }
 
     public String toString() {
-        return value.get();
+        return Localization.getTranslation(value.get());
     }
 }
