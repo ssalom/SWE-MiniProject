@@ -148,7 +148,9 @@ public class TaskManagerGUIView {
         if(mouseEvent.getButton().equals(MouseButton.PRIMARY)){
             SelectionModel<Task> selectionModel = tasks.getSelectionModel();
             Task task = selectionModel.getSelectedItem();
-            loadTaskIntoTaskForm(ts.getTaskByNumber(task.getNumber()));
+            if (task != null) {
+                loadTaskIntoTaskForm(ts.getTaskByNumber(task.getNumber()));
+            }
         }
     }
 

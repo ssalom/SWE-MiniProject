@@ -23,10 +23,15 @@ public class TaskManagerRepository {
             preparedStatement.setString(3, tc.getDescription());
             preparedStatement.setInt(4, tc.getState().getId());
             preparedStatement.setInt(5, tc.getPriority().getId());
-            return preparedStatement.execute();
+            if (preparedStatement.execute()) {
+                TaskManagerDBConnection.closeConnection(connection);
+                return true;
+            }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
+
+        TaskManagerDBConnection.closeConnection(connection);
         return false;
     }
 
@@ -41,11 +46,16 @@ public class TaskManagerRepository {
             preparedStatement.setInt(3, tc.getState().getId());
             preparedStatement.setInt(4, tc.getPriority().getId());
             preparedStatement.setInt(5, tc.getNumber());
-            preparedStatement.execute();
+            if (preparedStatement.execute()) {
+                TaskManagerDBConnection.closeConnection(connection);
+                return true;
+            }
 
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
+
+        TaskManagerDBConnection.closeConnection(connection);
         return false;
     }
 
@@ -56,11 +66,14 @@ public class TaskManagerRepository {
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setInt(1, tc.getNumber());
-            return preparedStatement.execute();
+            if (preparedStatement.execute()) {
+                TaskManagerDBConnection.closeConnection(connection);
+                return true;
+            }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
-
+        TaskManagerDBConnection.closeConnection(connection);
         return false;
     }
 
@@ -71,6 +84,7 @@ public class TaskManagerRepository {
         try {
             Statement statement = connection.createStatement();
             ResultSet result = statement.executeQuery(sql);
+
             while (result.next()) {
                 tasks.add(TaskMapper.mapResultSetToTask(result, new Task(), priorities, states));
             }
@@ -78,6 +92,7 @@ public class TaskManagerRepository {
             throwables.printStackTrace();
         }
 
+        TaskManagerDBConnection.closeConnection(connection);
         return tasks;
     }
 }
